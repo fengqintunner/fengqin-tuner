@@ -7,8 +7,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="凤琴调音器">
+<!-- 核心图标标签 -->
+<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="shortcut icon" type="image/png" href="./icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="manifest" href="./manifest.json">
-<meta name="apple-mobile-web-app-icon" href="./icon-192.png">
 <title>凤琴调音器 · 中式弹拨乐界清流</title>
 <style>
 :root{
@@ -655,6 +659,18 @@ body::before{
 
   renderModes();
   updateStringsUI();
+  // ===== 注册 Service Worker 核心代码 =====
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful');
+        })
+        .catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+    });
+  }
 })();
 </script>
 </body>
