@@ -287,14 +287,15 @@ body::before{
     ref: 440,
     modeId: 'free',
     listening: false,
-    activeStringIdx: -1
+    activeStringIdx: -1,
+    wasListeningBeforeHide: false // 新增：标记切后台前是否正在拾音
   };
   var audioCtx = null;
   var analyser = null;
   var source = null;
   var rafId = null;
   var silenceTimer = 0;
-  var mediaStream = null; //保存麦克风流，用于关闭释放
+  var mediaStream = null;
 
   function renderModes() {
     el.modeGroup.innerHTML = '';
@@ -351,9 +352,10 @@ body::before{
     highlightString(-1);
   }
 
-  // 停止麦克风，释放硬件
+  // 彻底释放麦克风资源（兜底清理）
   function stopAudio(){
     state.listening = false;
+    state.wasListeningBeforeHide = false;
     if(rafId){
       cancelAnimationFrame(rafId);
       rafId = null;
@@ -368,7 +370,6 @@ body::before{
     analyser = null;
     el.live.hidden = true;
     el.gate.hidden = false;
-    //重置开启麦克风按钮状态，解决停掉后一直显示“正在启动”
     el.startBtn.disabled = false;
     el.startBtn.textContent = '开启麦克风';
     resetTunerUI();
@@ -465,7 +466,8 @@ body::before{
     if (a) T0 = T0 - b / (2 * a);
     return sampleRate / T0;
   }
-  function startAudio() {
+
+  async function startAudio() {
     if (state.listening) return;
     
     var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -478,29 +480,29 @@ body::before{
     el.startBtn.textContent = '正在启动...';
     if (!audioCtx) audioCtx = new AudioContext();
     
-    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } })
-      .then(function (stream) {
-        mediaStream = stream;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        
-        source = audioCtx.createMediaStreamSource(stream);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 2048;
-        source.connect(analyser);
-        state.listening = true;
-        el.gate.hidden = true;
-        el.live.hidden = false;
-        
-        resetTunerUI();
-        silenceTimer = Date.now();
-        listenLoop();
-      })
-      .catch(function (err) {
-        console.error(err);
-        el.startBtn.disabled = false;
-        el.startBtn.textContent = '开启麦克风';
-        alert('无法访问麦克风。请确保：\n1. 您是在 Safari 浏览器中打开\n2. 已允许麦克风权限。');
-      });
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } });
+      mediaStream = stream;
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      
+      source = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+      state.listening = true;
+      state.wasListeningBeforeHide = true;
+      el.gate.hidden = true;
+      el.live.hidden = false;
+      
+      resetTunerUI();
+      silenceTimer = Date.now();
+      listenLoop();
+    }catch (err) {
+      console.error(err);
+      el.startBtn.disabled = false;
+      el.startBtn.textContent = '开启麦克风';
+      alert('无法访问麦克风。请确保：\n1. 您是在 Safari 浏览器中打开\n2. 已允许麦克风权限。');
+    }
   }
   var lastTime = 0;
   function listenLoop(time) {
@@ -520,14 +522,20 @@ body::before{
     }
   }
 
-  // 页面切回可见时，恢复音频上下文，修复切后台失效
-  document.addEventListener('visibilitychange', function(){
-    if(!state.listening) return;
-    if(!document.hidden){
-      //页面重新可见
-      if(audioCtx && audioCtx.state === 'suspended'){
-        audioCtx.resume();
-      }
+  // ========= 【重点修复：visibilitychange 前台后台切换逻辑】 =========
+  document.addEventListener('visibilitychange', async function(){
+    if(document.hidden){
+      // 切到后台：标记状态，不维持坏掉的流
+      state.wasListeningBeforeHide = state.listening;
+      return;
+    }
+    // 切回前台：如果之前正在拾音 → 销毁旧流，重新打开麦克风
+    if(state.wasListeningBeforeHide){
+      stopAudio();
+      // 延迟一小段，规避Safari时序bug
+      setTimeout(async ()=>{
+        await startAudio();
+      },350);
     }
   });
 
