@@ -42,7 +42,6 @@ body::before{
   max-width:500px;margin:0 auto;
   padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 26px);
 }
-
 /* 微信提示遮罩 */
 #wx-mask {
   display: none; position: fixed; inset: 0; z-index: 9999;
@@ -51,7 +50,6 @@ body::before{
 }
 #wx-mask .arrow { font-size: 40px; margin-right: 10px; display: inline-block; animation: bounce 1s infinite alternate; }
 @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-
 /* ---------- 品牌区 ---------- */
 .brand{text-align:center;padding:2px 0 16px;}
 .logo{
@@ -64,10 +62,8 @@ body::before{
 }
 .brand h1{margin:0;font-size:22px;font-weight:600;letter-spacing:.22em;text-indent:.22em;}
 .slogan{margin:7px 0 0;font-size:11.5px;letter-spacing:.34em;text-indent:.34em;color:var(--gold-d);}
-
 /* ---------- 通用块 ---------- */
 .block{margin-bottom:11px;}
-
 /* ---------- 基准音 ---------- */
 .segmented{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .seg{
@@ -82,7 +78,6 @@ body::before{
   color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
 }
 .seg.active span{color:var(--gold-d);opacity:1;}
-
 /* ---------- 乐器模式 ---------- */
 .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .mode-btn{
@@ -97,7 +92,6 @@ body::before{
   color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
 }
 .mode-btn.active .sub{color:var(--gold-d);opacity:1;}
-
 /* ---------- 定弦说明 ---------- */
 .strings-head{font-size:11px;letter-spacing:.14em;color:var(--ink-3);margin:0 0 6px 2px;}
 .strings{display:flex;gap:6px;}
@@ -113,7 +107,6 @@ body::before{
   border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
   box-shadow:0 3px 12px rgba(184,147,90,.22);transform:translateY(-1px);
 }
-
 /* ---------- 拾音面板 ---------- */
 .tuner{
   margin-top:14px;padding:20px 18px 18px;border:1px solid var(--line);border-radius:20px;
@@ -124,7 +117,6 @@ body::before{
 .tuner[data-state="low"]{--sc:var(--low);}
 .tuner[data-state="ok"]{--sc:var(--ok);}
 .tuner[data-state="high"]{--sc:var(--high);}
-
 .start-btn{
   appearance:none;font-family:inherit;cursor:pointer;border:1px solid var(--gold);
   background:linear-gradient(180deg,#FFFBF1,#F6EBD6);color:var(--gold-d);
@@ -132,13 +124,18 @@ body::before{
   margin:28px 0 12px;box-shadow:0 4px 16px rgba(184,147,90,.18);transition:transform .15s;
 }
 .start-btn:active{transform:scale(.97);}
+.stop-btn{
+  appearance:none;font-family:inherit;cursor:pointer;border:1px solid #b95448;
+  background:#f8efed;color:#b95448;
+  font-size:16px;letter-spacing:.12em;padding:14px 36px;border-radius:999px;
+  margin:28px 0 12px;box-shadow:0 4px 14px rgba(185,84,72,.15);transition:transform .15s;
+}
+.stop-btn:active{transform:scale(.97);}
 .hint{margin:0 0 20px;font-size:11.5px;line-height:1.7;color:var(--ink-3);letter-spacing:.04em;}
-
 .note-display{display:flex;align-items:baseline;justify-content:center;gap:4px;min-height:78px;}
 .note-name{font-size:72px;line-height:1;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
 .note-oct{font-size:54px;line-height:1;font-weight:600;color:var(--gold-d);font-variant-numeric:tabular-nums;}
 .freq{font-size:14px;color:var(--ink-2);letter-spacing:.06em;font-variant-numeric:tabular-nums;margin-top:2px;min-height:20px;}
-
 .meter{margin-top:16px;}
 .meter-scale{
   position:relative;height:46px;border-radius:23px;border:1px solid var(--line);
@@ -160,62 +157,56 @@ body::before{
 }
 .tuner[data-state="ok"] .meter-needle{animation:pulse 1.3s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
-
 .meter-legend{
   display:flex;justify-content:space-between;padding:6px 3px 0;font-size:10.5px;
   color:var(--ink-3);letter-spacing:.05em;font-variant-numeric:tabular-nums;
 }
-.readout{margin-top:8px;display:flex;align-items:baseline;justify-content:center;gap:10px;min-height:26px;}
-.cents{font-size:20px;font-weight:600;color:var(--sc);font-variant-numeric:tabular-nums;transition:color .2s;}
-.status{font-size:12.5px;letter-spacing:.06em;color:var(--ink-2);}
-
+.readout{margin-top:10px;display:flex;align-items:baseline;justify-content:center;gap:12px;min-height:32px;}
+.cents{font-size:26px;font-weight:600;color:var(--sc);font-variant-numeric:tabular-nums;transition:color .2s;}
+.status{font-size:18px;letter-spacing:.06em;color:var(--ink-2);}
 .foot{margin-top:26px;text-align:center;font-size:10.5px;letter-spacing:.24em;text-indent:.24em;color:var(--ink-3);}
-
 @media (max-width:360px){
   .note-name{font-size:62px;}
   .note-oct{font-size:46px;}
   .mode-btn{font-size:12px;}
   .seg{font-size:12px;}
+  .cents{font-size:22px;}
+  .status{font-size:16px;}
 }
 </style>
 </head>
 <body>
-
 <!-- 微信内置浏览器提示 -->
 <div id="wx-mask">
   <div class="arrow">↗</div>
   <div>请点击右上角 <strong>···</strong><br>选择 <strong>“在 Safari 浏览器中打开”</strong><br>才能正常使用麦克风调音</div>
 </div>
-
 <div class="app">
   <header class="brand">
     <div class="logo">凤</div>
     <h1>凤琴调音器</h1>
     <p class="slogan">中式弹拨乐界清流</p>
   </header>
-
   <section class="block">
     <div class="segmented" id="refGroup">
       <button class="seg active" data-ref="440">A4 = 440Hz<span>国际标准</span></button>
       <button class="seg" data-ref="432">A4 = 432Hz<span>伶伦凤鸣定律猜想</span></button>
     </div>
   </section>
-
   <section class="block">
     <div class="modes" id="modeGroup"></div>
   </section>
-
   <section class="block" id="stringsWrap" hidden>
     <div class="strings-head">定弦参考 · 粗弦 → 细弦</div>
     <div class="strings" id="stringsPanel"></div>
   </section>
-
   <section class="tuner" id="tuner" data-state="idle">
     <div id="gate">
       <button class="start-btn" id="startBtn">开启麦克风</button>
       <p class="hint">需要麦克风授权 · 声音仅在本机处理，不会上传</p>
     </div>
     <div id="live" hidden>
+      <button class="stop-btn" id="stopBtn">关闭麦克风</button>
       <div class="note-display">
         <span class="note-name" id="noteName"></span>
         <span class="note-oct" id="noteOct"></span>
@@ -234,20 +225,16 @@ body::before{
       </div>
     </div>
   </section>
-
   <footer class="foot">凤琴 · 千年文脉皆可弦歌</footer>
 </div>
-
 <script>
 (function () {
   'use strict';
-
   // 检测是否在微信中打开
   var ua = navigator.userAgent.toLowerCase();
   if (ua.match(/MicroMessenger/i) == "micromessenger") {
     document.getElementById('wx-mask').style.display = 'block';
   }
-
   var NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   var MODES = [
     { id:'free', label:'自由调音', sub:'任意乐器', strings:null },
@@ -278,7 +265,6 @@ body::before{
       { label:'1弦', name:'A', oct:4, midi:69 }
     ]}
   ];
-
   var $ = function (id) { return document.getElementById(id); };
   var el = {
     refGroup: $('refGroup'),
@@ -289,6 +275,7 @@ body::before{
     gate: $('gate'),
     live: $('live'),
     startBtn: $('startBtn'),
+    stopBtn: $('stopBtn'),
     noteName: $('noteName'),
     noteOct: $('noteOct'),
     freqVal: $('freqVal'),
@@ -296,19 +283,18 @@ body::before{
     centsVal: $('centsVal'),
     statusText: $('statusText')
   };
-
   var state = {
     ref: 440,
     modeId: 'free',
     listening: false,
     activeStringIdx: -1
   };
-
   var audioCtx = null;
   var analyser = null;
   var source = null;
   var rafId = null;
   var silenceTimer = 0;
+  var mediaStream = null; //保存麦克风流，用于关闭释放
 
   function renderModes() {
     el.modeGroup.innerHTML = '';
@@ -325,7 +311,6 @@ body::before{
       el.modeGroup.appendChild(btn);
     });
   }
-
   function updateStringsUI() {
     var mode = MODES.find(function (m) { return m.id === state.modeId; });
     if (!mode || !mode.strings) {
@@ -346,7 +331,6 @@ body::before{
     });
     highlightString(-1);
   }
-
   function highlightString(idx) {
     if (state.activeStringIdx === idx) return;
     state.activeStringIdx = idx;
@@ -356,7 +340,6 @@ body::before{
       else cards[i].classList.remove('active');
     }
   }
-
   function resetTunerUI() {
     el.noteName.textContent = '';
     el.noteOct.textContent = '';
@@ -368,19 +351,40 @@ body::before{
     highlightString(-1);
   }
 
+  // 停止麦克风，释放硬件
+  function stopAudio(){
+    state.listening = false;
+    if(rafId){
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    if(mediaStream){
+      mediaStream.getTracks().forEach(function(track){
+        track.stop();
+      });
+      mediaStream = null;
+    }
+    source = null;
+    analyser = null;
+    el.live.hidden = true;
+    el.gate.hidden = false;
+    //重置开启麦克风按钮状态，解决停掉后一直显示“正在启动”
+    el.startBtn.disabled = false;
+    el.startBtn.textContent = '开启麦克风';
+    resetTunerUI();
+  }
+
   function updateTunerUI(freq) {
     if (!freq) {
       if (Date.now() - silenceTimer > 800) resetTunerUI();
       return;
     }
-
     var midiFloat = 69 + 12 * Math.log2(freq / state.ref);
     var midiRound = Math.round(midiFloat);
     
     var mode = MODES.find(function (m) { return m.id === state.modeId; });
     var targetMidi = null;
     var targetIdx = -1;
-
     if (mode && mode.strings) {
       var minDiff = 1.0;
       mode.strings.forEach(function (s, i) {
@@ -392,10 +396,8 @@ body::before{
         }
       });
     }
-
     var cents = 0;
     var displayMidi = midiRound;
-
     if (targetMidi !== null) {
       cents = (midiFloat - targetMidi) * 100;
       displayMidi = targetMidi;
@@ -404,10 +406,8 @@ body::before{
       cents = (midiFloat - midiRound) * 100;
       highlightString(-1);
     }
-
     if (cents > 50) cents = 50;
     if (cents < -50) cents = -50;
-
     var noteName = NOTE_NAMES[displayMidi % 12];
     var octave = Math.floor(displayMidi / 12) - 1;
     el.noteName.textContent = noteName;
@@ -416,7 +416,6 @@ body::before{
     
     var percent = (cents + 50) / 100 * 100;
     el.needle.style.left = percent + '%';
-
     var stateColor = 'ok';
     var statusStr = '音准';
     if (cents < -5) {
@@ -424,15 +423,13 @@ body::before{
       statusStr = '偏低 · 需拧紧';
     } else if (cents > 5) {
       stateColor = 'high';
-      statusStr = '偏高 · 需放松';
+      statusStr = '偏高 · 需拧松';
     }
     el.tuner.dataset.state = stateColor;
     el.centsVal.textContent = (cents > 0 ? '+' : '') + cents.toFixed(1);
     el.statusText.textContent = statusStr;
-
     silenceTimer = Date.now();
   }
-
   function autoCorrelate(buf, sampleRate) {
     var SIZE = buf.length;
     var rms = 0;
@@ -442,21 +439,17 @@ body::before{
     }
     rms = Math.sqrt(rms / SIZE);
     if (rms < 0.01) return -1;
-
     var r1 = 0, r2 = SIZE - 1, thres = 0.2;
     for (var i = 0; i < SIZE / 2; i++) if (Math.abs(buf[i]) < thres) { r1 = i; break; }
     for (var i = 1; i < SIZE / 2; i++) if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
-
     buf = buf.slice(r1, r2);
     SIZE = buf.length;
-
     var c = new Float32Array(SIZE);
     for (var i = 0; i < SIZE; i++) {
       for (var j = 0; j < SIZE - i; j++) {
         c[i] = c[i] + buf[j] * buf[j + i];
       }
     }
-
     var d = 0; while (c[d] > c[d + 1]) d++;
     var maxval = -1, maxpos = -1;
     for (var i = d; i < SIZE; i++) {
@@ -466,15 +459,12 @@ body::before{
       }
     }
     var T0 = maxpos;
-
     var x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
     var a = (x1 + x3 - 2 * x2) / 2;
     var b = (x3 - x1) / 2;
     if (a) T0 = T0 - b / (2 * a);
-
     return sampleRate / T0;
   }
-
   function startAudio() {
     if (state.listening) return;
     
@@ -486,18 +476,17 @@ body::before{
     
     el.startBtn.disabled = true;
     el.startBtn.textContent = '正在启动...';
-
     if (!audioCtx) audioCtx = new AudioContext();
     
     navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } })
       .then(function (stream) {
+        mediaStream = stream;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         
         source = audioCtx.createMediaStreamSource(stream);
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 2048;
         source.connect(analyser);
-
         state.listening = true;
         el.gate.hidden = true;
         el.live.hidden = false;
@@ -513,15 +502,12 @@ body::before{
         alert('无法访问麦克风。请确保：\n1. 您是在 Safari 浏览器中打开\n2. 已允许麦克风权限。');
       });
   }
-
   var lastTime = 0;
   function listenLoop(time) {
     if (!state.listening) return;
     rafId = requestAnimationFrame(listenLoop);
-
     if (time - lastTime < 50) return; 
     lastTime = time;
-
     var buffer = new Float32Array(analyser.fftSize);
     analyser.getFloatTimeDomainData(buffer);
     
@@ -533,6 +519,17 @@ body::before{
       updateTunerUI(null);
     }
   }
+
+  // 页面切回可见时，恢复音频上下文，修复切后台失效
+  document.addEventListener('visibilitychange', function(){
+    if(!state.listening) return;
+    if(!document.hidden){
+      //页面重新可见
+      if(audioCtx && audioCtx.state === 'suspended'){
+        audioCtx.resume();
+      }
+    }
+  });
 
   el.refGroup.addEventListener('click', function (e) {
     var btn = e.target.closest('.seg');
@@ -549,12 +546,12 @@ body::before{
     }
     resetTunerUI();
   });
-
   el.startBtn.addEventListener('click', startAudio);
-
+  el.stopBtn.addEventListener('click', stopAudio);
   renderModes();
   updateStringsUI();
 })();
 </script>
 </body>
 </html>
+<!-- （注：内容由AI生成） -->
