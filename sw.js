@@ -1,4 +1,4 @@
-const CACHE_NAME = "fengqin-tuner-v2"; // 名字改成了标准英文减号，版本号升到 v2 会强制刷新旧缓存
+const CACHE_NAME = "fengqin-tuner-v3"; // 名字改成了标准英文减号，版本号升到 v3会强制刷新旧缓存
 const ASSETS = [
   "./index.html",
   "./manifest.json",

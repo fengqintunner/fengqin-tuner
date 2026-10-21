@@ -1,6 +1,6 @@
 {
   "name": "凤琴调音器",
-  "short_name": "凤琴调音器",
+  "short_name": "凤琴调音",
   "description": "凤琴｜千年文脉皆可弦歌",
   "start_url": "./index.html",
   "display": "standalone",
