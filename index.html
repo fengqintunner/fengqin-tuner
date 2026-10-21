@@ -386,21 +386,11 @@ body::before{
     highlightString(-1);
   }
 
-  // 彻底释放麦克风资源
   function stopAudio(keepUI) {
     state.listening = false;
-    if (rafId) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-    if (mediaStream) {
-      mediaStream.getTracks().forEach(function(track) { track.stop(); });
-      mediaStream = null;
-    }
-    if (source) {
-      source.disconnect();
-      source = null;
-    }
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    if (mediaStream) { mediaStream.getTracks().forEach(function(track) { track.stop(); }); mediaStream = null; }
+    if (source) { source.disconnect(); source = null; }
     analyser = null;
 
     if (!keepUI) {
@@ -458,19 +448,15 @@ body::before{
     
     var stateColor = 'ok';
     var statusStr = '音准';
-    if (cents < -5) {
-      stateColor = 'low';
-      statusStr = '偏低 · 需拧紧';
-    } else if (cents > 5) {
-      stateColor = 'high';
-      statusStr = '偏高 · 需拧松';
-    }
+    if (cents < -5) { stateColor = 'low'; statusStr = '偏低 · 需拧紧'; }
+    else if (cents > 5) { stateColor = 'high'; statusStr = '偏高 · 需拧松'; }
     el.tuner.dataset.state = stateColor;
     el.centsVal.textContent = (cents > 0 ? '+' : '') + cents.toFixed(1);
     el.statusText.textContent = statusStr;
     silenceTimer = Date.now();
   }
 
+  // 🌟 优化 1：降低噪音门槛，提高自相关算法的弱信号捕捉能力
   function autoCorrelate(buf, sampleRate) {
     var SIZE = buf.length;
     var rms = 0;
@@ -479,9 +465,14 @@ body::before{
       rms += val * val;
     }
     rms = Math.sqrt(rms / SIZE);
-    if (rms < 0.01) return -1;
     
-    var r1 = 0, r2 = SIZE - 1, thres = 0.2;
+    // 【核心修改】：以前是 0.01，太高了，现在降到 0.0015，连极微弱的拨弦也能触发
+    if (rms < 0.0015) return -1; 
+
+    var r1 = 0, r2 = SIZE - 1;
+    // 【核心修改】：使用动态阈值。如果声音小，阈值就自适应变小，避免把波形直接切断
+    var thres = Math.max(0.03, rms * 0.5); 
+    
     for (var i = 0; i < SIZE / 2; i++) if (Math.abs(buf[i]) < thres) { r1 = i; break; }
     for (var i = 1; i < SIZE / 2; i++) if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
     
@@ -511,7 +502,6 @@ body::before{
     return sampleRate / T0;
   }
 
-  // 核心：启动麦克风与拾音循环
   async function startAudio(isUserGesture) {
     if (state.listening) return;
 
@@ -521,52 +511,47 @@ body::before{
       return;
     }
 
-    // 只有在用户真实点击时，才改变按钮 UI 防止闪烁
     if (isUserGesture) {
       el.startBtn.disabled = true;
       el.startBtn.textContent = '正在启动...';
     }
 
     try {
-      // 1. 如果 audioCtx 存在且被挂起（Safari切后台的默认行为），必须先唤醒
-      if (audioCtx && audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-      }
+      if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
 
-      // 2. 如果之前有坏掉的流，先彻底清理
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(t => t.stop());
-      }
-
-      // 3. 重新申请麦克风
+      // 🌟 优化 2：开启 autoGainControl (自动增益)，让手机自动放大微弱声音
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } 
+        audio: { 
+          echoCancellation: false, 
+          autoGainControl: true,   // 开启系统级音量自动放大
+          noiseSuppression: false 
+        } 
       });
       mediaStream = stream;
 
-      // 4. 初始化或重建 AudioContext 及节点
-      if (!audioCtx) {
-        audioCtx = new AudioContext();
-      }
-      if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
 
       source = audioCtx.createMediaStreamSource(stream);
       analyser = audioCtx.createAnalyser();
       analyser.fftSize = 2048;
-      source.connect(analyser);
+
+      // 🌟 优化 3：加入代码级 GainNode 音频放大器，把麦克风信号强行放大 3 倍
+      var gainNode = audioCtx.createGain();
+      gainNode.gain.value = 3.0; // 放大倍数（如果还嫌不灵敏可以调到 4 或 5）
+      
+      source.connect(gainNode);
+      gainNode.connect(analyser);
 
       state.listening = true;
       state.wasListeningBeforeHide = true;
       
-      // UI 切换
       el.gate.hidden = true;
       el.live.hidden = false;
       resetTunerUI();
       silenceTimer = Date.now();
       
-      // 启动拾音帧循环
       if (!rafId) {
         lastTime = 0;
         rafId = requestAnimationFrame(listenLoop);
@@ -574,18 +559,15 @@ body::before{
 
     } catch (err) {
       console.error('麦克风启动失败:', err);
-      
       if (isUserGesture) {
         el.startBtn.disabled = false;
         el.startBtn.textContent = '开启麦克风';
         alert('无法访问麦克风。请确保已授予麦克风权限。');
       } else {
-        // 如果是自动恢复失败（切回前台没声音），降级展示恢复按钮
         el.gate.hidden = false;
         el.live.hidden = true;
         el.startBtn.disabled = false;
         el.startBtn.textContent = '点击继续调音';
-        // 将按钮的行为改为用户手势触发重连
         el.startBtn.onclick = () => startAudio(true);
       }
     }
@@ -594,8 +576,6 @@ body::before{
   function listenLoop(time) {
     if (!state.listening) return;
     rafId = requestAnimationFrame(listenLoop);
-    
-    // 控制帧率，避免手机发热（约 20fps）
     if (time - lastTime < 50) return; 
     lastTime = time;
 
@@ -612,35 +592,22 @@ body::before{
     }
   }
 
-  // ========= 处理前后台切换 =========
   document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
-      // 切到后台时：记录状态，并立刻暂停 AudioContext 省电，停止麦克风流
       if (state.listening) {
         state.wasListeningBeforeHide = true;
-        // 注意：这里不调 stopAudio() 改变 UI，只挂起音频
-        if (audioCtx && audioCtx.state === 'running') {
-          audioCtx.suspend();
-        }
+        if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
       }
     } else {
-      // 切回前台时：如果之前在听，尝试自动恢复
-      if (state.wasListeningBeforeHide) {
-        // 必须彻底清理旧的媒体流，否则 iOS 拿不到新流
-        stopAudio(true); 
-        // 尝试非用户手势的自动重连
-        startAudio(false); 
-      }
+      if (state.wasListeningBeforeHide) { stopAudio(true); startAudio(false); }
     }
   });
 
   el.refGroup.addEventListener('click', function (e) {
     var btn = e.target.closest('.seg');
     if (!btn) return;
-    
     var ref = parseInt(btn.dataset.ref, 10);
     if (ref === state.ref) return;
-    
     state.ref = ref;
     var segs = el.refGroup.querySelectorAll('.seg');
     for (var i = 0; i < segs.length; i++) {
@@ -650,7 +617,6 @@ body::before{
     resetTunerUI();
   });
 
-  // 初始化绑定
   el.startBtn.addEventListener('click', () => startAudio(true));
   el.stopBtn.addEventListener('click', () => {
     state.wasListeningBeforeHide = false;
@@ -659,19 +625,13 @@ body::before{
 
   renderModes();
   updateStringsUI();
-  // ===== 注册 Service Worker 核心代码 =====
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful');
-        })
-        .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
-        });
+        .then(registration => { console.log('ServiceWorker registration successful'); })
+        .catch(err => { console.log('ServiceWorker registration failed: ', err); });
     });
   }
 })();
 </script>
-</body>
-</html>
