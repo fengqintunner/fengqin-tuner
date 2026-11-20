@@ -141,7 +141,7 @@ body::before{
   flex:1;
   text-align:center;border:1px solid var(--line);
   background:var(--paper);border-radius:10px;
-  padding:8px 2px 9px; /* 略微增加上下内边距以容纳更大字体 */
+  padding:8px 2px 9px;
   transition:all .18s;
   cursor:pointer;
 }
@@ -220,20 +220,40 @@ body::before{
   align-items: center;
 }
 
-.note-display{display:flex;align-items:baseline;justify-content:center;gap:6px;min-height:60px;margin-top:6px;}
+/* 去除margin-top，使整体与右侧平齐 */
+.note-display{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:60px;
+  margin-top:0;
+  width: 100%;
+}
 .note-name{font-size:56px;line-height:1;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
 .note-oct{font-size:40px;line-height:1;font-weight:600;color:var(--gold-d);font-variant-numeric:tabular-nums;}
 
-/* 未选弦提示颜色改为和开启调音一致的金色 */
+/* 修复：去掉外框背景与阴影，保留字号颜色，用透明边框占位保持高度对齐 */
 .note-name.is-prompt {
-  font-size: 22px;
-  font-weight: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 14px 10px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
   color: var(--gold-d);
   letter-spacing: 0.1em;
-  align-self: center;
+  border: 1px solid transparent; /* 透明边框，用于完美占位维持高度 */
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  box-sizing: border-box;
+  margin: 0;
 }
 
-.freq{font-size:13.5px;color:var(--ink-2);letter-spacing:.06em;font-variant-numeric:tabular-nums;margin-top:2px;min-height:20px;}
+.freq{font-size:13.5px;color:var(--ink-2);letter-spacing:.06em;font-variant-numeric:tabular-nums;margin-top:6px;min-height:20px;}
 
 /* 进度条 */
 .meter{
@@ -315,13 +335,17 @@ body::before{
   
   .note-name{font-size:46px;}
   .note-oct{font-size:34px;}
-  .note-name.is-prompt { font-size: 20px; }
+  
+  /* 极小屏幕同步适配提示框尺寸 */
+  .note-name.is-prompt {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
   
   .meter { height: 140px; }
   .meter-scale{width:36px;height:140px;}
   .meter-legend{ right: calc(50% + 24px); }
   
-  /* 小屏幕下稍微克制一点，但也比原来大 */
   .string-card .label { font-size: 12px; }
   .string-card .note { font-size: 19px; }
   .string-card .note .oct { font-size: 13px; }
