@@ -362,11 +362,11 @@ body::before{
   <div class="panel panel-right">
     <section class="tuner" id="tuner" data-state="idle">
       <div id="gate">
-        <button class="start-btn" id="startBtn">开启调音</button>
+        <button class="start-btn" id="startBtn">打开麦克风</button>
       </div>
 
       <div id="stopWrap" hidden>
-        <button class="stop-btn" id="stopBtn">关闭调音</button>
+        <button class="stop-btn" id="stopBtn">关闭麦克风</button>
       </div>
 
       <div class="tuner-body">
@@ -548,7 +548,7 @@ body::before{
       el.stopWrap.hidden = true;
       el.gate.hidden = false;
       el.startBtn.disabled = false;
-      el.startBtn.textContent = '开启调音';
+      el.startBtn.textContent = '打开麦克风';
       resetTunerUI();
     }
   }
@@ -710,7 +710,7 @@ body::before{
       console.error('麦克风启动失败:', err);
       if (isUserGesture) {
         el.startBtn.disabled = false;
-        el.startBtn.textContent = '开启调音';
+        el.startBtn.textContent = '打开麦克风';
         alert('无法访问麦克风。请确保已授予麦克风权限。');
       } else {
         el.gate.hidden = false;
