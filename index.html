@@ -107,9 +107,10 @@ body::before{
   margin:0 auto;
   padding:0 16px calc(env(safe-area-inset-bottom) + 28px);
   display:grid;
-  grid-template-columns:48% minmax(0,1fr);
+  /* 左侧调音器稍宽，右侧菜单稍窄 */
+  grid-template-columns: minmax(0, 1fr) 48%;
   gap:14px;
-  align-items:stretch;
+  align-items: stretch; /* 恢复等高拉伸 */
 }
 .panel{
   border:1px solid var(--line);
@@ -122,7 +123,8 @@ body::before{
   display:flex;flex-direction:column;
 }
 .panel-right{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content: flex-start; /* 顶部对齐 */
 }
 
 /* ========== 定弦参考板块 ========== */
@@ -142,6 +144,7 @@ body::before{
   background:var(--paper);border-radius:10px;
   padding:6px 2px 7px;
   transition:all .18s;
+  cursor:pointer;
 }
 .string-card .label{font-size:11px;color:var(--ink-3);letter-spacing:.04em;}
 .string-card .note{font-size:18px;font-weight:600;line-height:1.15;margin-top:1px;}
@@ -151,7 +154,7 @@ body::before{
   box-shadow:0 2px 8px rgba(184,147,90,.22);transform:translateY(-1px);
 }
 
-/* ========== 左侧菜单 ========== */
+/* ========== 侧边菜单 ========== */
 .block{margin-bottom:12px;}
 .block:last-child{margin-bottom:0;}
 
@@ -163,13 +166,14 @@ body::before{
   transition:all .18s;
   display:flex;justify-content:center;align-items:center;text-align:center;
   font-weight:600;
+  width:100%;
 }
 .mode-btn.active{
   border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
   color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
 }
 
-/* ========== 右侧：垂直调音器 ========== */
+/* ========== 垂直调音器 ========== */
 .tuner{
   width:100%;text-align:center;
   --sc:#C4BAA8;transition:box-shadow .25s;
@@ -179,23 +183,32 @@ body::before{
 .tuner[data-state="ok"]{--sc:var(--ok);}
 .tuner[data-state="high"]{--sc:var(--high);}
 
-#gate, #stopWrap { width:100%; text-align:center; }
+#gate, #stopWrap { width:100%; text-align:center; margin-bottom: 10px; }
 #gate[hidden], #stopWrap[hidden] { display:none !important; }
 
-.start-btn{
-  appearance:none;font-family:inherit;cursor:pointer;border:1px solid var(--gold);
-  background:linear-gradient(180deg,#FFFBF1,#F6EBD6);color:var(--gold-d);
-  font-size:16px;letter-spacing:.1em;padding:14px 30px;border-radius:999px;
-  margin:12px 0 14px;box-shadow:0 4px 16px rgba(184,147,90,.18);transition:transform .15s;
-  width:100%;max-width:200px;
+/* 按钮样式与 mode-btn 保持完全一致 */
+.start-btn, .stop-btn {
+  appearance:none;font-family:inherit;cursor:pointer;
+  border-radius:12px;
+  padding:14px 10px;font-size:15px;line-height:1.3;
+  display:flex;justify-content:center;align-items:center;text-align:center;
+  font-weight:600;
+  width:100%;
+  transition:all .18s;
+  margin: 0;
+}
+.start-btn {
+  border:1px solid var(--gold);
+  background:linear-gradient(180deg,#FFFBF1,#F6EBD6);
+  color:var(--gold-d);
+  box-shadow:0 2px 12px rgba(184,147,90,.16);
 }
 .start-btn:active{transform:scale(.97);}
-.stop-btn{
-  appearance:none;font-family:inherit;cursor:pointer;border:1px solid #b95448;
-  background:#f8efed;color:#b95448;
-  font-size:15px;letter-spacing:.1em;padding:14px 30px;border-radius:999px;
-  margin:12px 0 16px;box-shadow:0 4px 14px rgba(185,84,72,.15);transition:transform .15s;
-  width:100%;max-width:200px;
+.stop-btn {
+  border:1px solid #b95448;
+  background:#f8efed;
+  color:#b95448;
+  box-shadow:0 2px 12px rgba(185,84,72,.15);
 }
 .stop-btn:active{transform:scale(.97);}
 
@@ -206,23 +219,35 @@ body::before{
   align-items: center;
 }
 
-.note-display{display:flex;align-items:baseline;justify-content:center;gap:6px;min-height:66px;margin-top:10px;}
-.note-name{font-size:60px;line-height:1;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
-.note-oct{font-size:44px;line-height:1;font-weight:600;color:var(--gold-d);font-variant-numeric:tabular-nums;}
+.note-display{display:flex;align-items:baseline;justify-content:center;gap:6px;min-height:60px;margin-top:6px;}
+.note-name{font-size:56px;line-height:1;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
+.note-oct{font-size:40px;line-height:1;font-weight:600;color:var(--gold-d);font-variant-numeric:tabular-nums;}
+
+.note-name.is-prompt {
+  font-size: 20px;
+  font-weight: normal;
+  color: var(--ink-2);
+  letter-spacing: 0.1em;
+  align-self: center;
+}
+
 .freq{font-size:13.5px;color:var(--ink-2);letter-spacing:.06em;font-variant-numeric:tabular-nums;margin-top:2px;min-height:20px;}
 
+/* 进度条及整体高度 */
 .meter{
-  margin-top:16px;
+  margin-top:10px;
+  position: relative;
+  width: 100%;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:12px;
+  height: 160px;
 }
 .meter-scale{
   position:relative;
-  width:44px;
-  height:200px;
-  border-radius:22px;
+  width:40px;
+  height:160px;
+  border-radius:20px;
   border:1px solid var(--line);
   background:linear-gradient(90deg,#F3ECDD,#F8F3E8);
   overflow:hidden;
@@ -245,14 +270,26 @@ body::before{
 .tuner[data-state="ok"] .meter-needle{animation:pulse 1.3s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
 
+/* 刻度悬浮左侧 */
 .meter-legend{
-  display:flex;flex-direction:column;justify-content:space-between;height:200px;
-  font-size:12px;color:var(--ink-3);letter-spacing:.05em;font-variant-numeric:tabular-nums;
-  padding:4px 0;
+  position: absolute;
+  right: calc(50% + 28px);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink-3);
+  letter-spacing: .05em;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 0;
+  text-align: right;
 }
-.readout{margin-top:16px;display:flex;align-items:baseline;justify-content:center;gap:10px;min-height:30px;}
-.cents{font-size:24px;font-weight:600;color:var(--sc);font-variant-numeric:tabular-nums;transition:color .2s;}
-.status{font-size:17px;letter-spacing:.06em;color:var(--ink-2);}
+
+.readout{margin-top:10px;display:flex;align-items:baseline;justify-content:center;gap:10px;min-height:30px;}
+.cents{font-size:22px;font-weight:600;color:var(--sc);font-variant-numeric:tabular-nums;transition:color .2s;}
+.status{font-size:16px;letter-spacing:.06em;color:var(--ink-2);}
 
 /* ========== 页脚 ========== */
 .foot{
@@ -266,15 +303,22 @@ body::before{
   .top-section { padding: calc(env(safe-area-inset-top) + 16px) 12px 12px; }
   .brand h1 { font-size: 22px; }
   .brand .slogan { font-size: 11.5px; }
-  .app{grid-template-columns:46% minmax(0,1fr);gap:10px;padding:0 10px calc(env(safe-area-inset-bottom) + 16px);}
+  .app{grid-template-columns:minmax(0, 1fr) 46%;gap:10px;padding:0 10px calc(env(safe-area-inset-bottom) + 16px);}
   .panel{padding:14px 10px;border-radius:16px;}
   #stringsWrap{padding:12px 10px; margin-bottom:0;}
-  .mode-btn{padding:12px 8px;font-size:14px;}
-  .note-name{font-size:50px;}
-  .note-oct{font-size:36px;}
-  .meter-scale{width:36px;height:180px;}
-  .meter-legend{height:180px;}
-  .start-btn, .stop-btn{padding:12px 10px;font-size:14px;max-width:160px;}
+  
+  .mode-btn, .start-btn, .stop-btn {
+    padding:12px 8px;font-size:14px;
+  }
+  
+  .note-name{font-size:46px;}
+  .note-oct{font-size:34px;}
+  .note-name.is-prompt { font-size: 18px; }
+  
+  .meter { height: 140px; }
+  .meter-scale{width:36px;height:140px;}
+  .meter-legend{ right: calc(50% + 24px); }
+  
   .string-card .note {font-size: 16px;}
   .string-card .note .oct {font-size: 12px;}
 }
@@ -294,7 +338,7 @@ body::before{
     <p class="slogan">中式弹拨乐界清流</p>
   </div>
   
-  <!-- 基准音选项移至顶部 -->
+  <!-- 基准音选项 -->
   <div class="top-ref" id="refGroup">
     <button class="seg active" data-ref="440">
       <span style="font-weight:600;">A4 = 440Hz</span>
@@ -314,14 +358,7 @@ body::before{
     <div class="strings" id="stringsPanel"></div>
   </div>
 
-  <!-- 左侧菜单 -->
-  <div class="panel panel-left">
-    <section class="block">
-      <div class="modes" id="modeGroup"></div>
-    </section>
-  </div>
-
-  <!-- 右侧调音器 -->
+  <!-- 左侧调音器 -->
   <div class="panel panel-right">
     <section class="tuner" id="tuner" data-state="idle">
       <div id="gate">
@@ -356,6 +393,13 @@ body::before{
           <span class="status" id="statusText">等待拾音…</span>
         </div>
       </div>
+    </section>
+  </div>
+
+  <!-- 右侧菜单 -->
+  <div class="panel panel-left">
+    <section class="block">
+      <div class="modes" id="modeGroup"></div>
     </section>
   </div>
 
@@ -426,7 +470,7 @@ body::before{
     ref: 440,
     modeId: 'free',
     listening: false,
-    activeStringIdx: -1,
+    selectedStringIdx: -1,
     wasListeningBeforeHide: false
   };
 
@@ -446,6 +490,7 @@ body::before{
       btn.textContent = m.label;
       btn.onclick = function () {
         state.modeId = m.id;
+        state.selectedStringIdx = -1;
         renderModes();
         updateStringsUI();
         resetTunerUI();
@@ -470,14 +515,24 @@ body::before{
       card.innerHTML =
         '<div class="label">' + s.label + '</div>' +
         '<div class="note">' + s.name + '<span class="oct">' + s.oct + '</span></div>';
+      
+      card.onclick = function () {
+        if (state.selectedStringIdx === i) {
+          state.selectedStringIdx = -1;
+        } else {
+          state.selectedStringIdx = i;
+        }
+        highlightString(state.selectedStringIdx);
+        resetTunerUI();
+      };
+      
       el.stringsPanel.appendChild(card);
     });
-    highlightString(-1);
+    highlightString(state.selectedStringIdx);
   }
 
   function highlightString(idx) {
-    if (state.activeStringIdx === idx) return;
-    state.activeStringIdx = idx;
+    state.selectedStringIdx = idx;
     var cards = el.stringsPanel.children;
     for (var i = 0; i < cards.length; i++) {
       if (i === idx) cards[i].classList.add('active');
@@ -486,14 +541,22 @@ body::before{
   }
 
   function resetTunerUI() {
-    el.noteName.textContent = '';
-    el.noteOct.textContent = '';
+    if (state.modeId !== 'free' && state.selectedStringIdx === -1) {
+      el.noteName.textContent = '请选择琴弦';
+      el.noteName.classList.add('is-prompt');
+      el.noteOct.textContent = '';
+      el.statusText.textContent = '';
+    } else {
+      el.noteName.textContent = '';
+      el.noteName.classList.remove('is-prompt');
+      el.noteOct.textContent = '';
+      el.statusText.textContent = '等待拾音…';
+    }
+    
     el.freqVal.textContent = '-- Hz';
     el.centsVal.textContent = '--';
-    el.statusText.textContent = '等待拾音…';
     el.needle.style.bottom = '50%';
     el.tuner.dataset.state = 'idle';
-    highlightString(-1);
   }
 
   function stopAudio(keepUI) {
@@ -508,58 +571,82 @@ body::before{
       el.gate.hidden = false;
       el.startBtn.disabled = false;
       el.startBtn.textContent = '开启调音';
+      state.selectedStringIdx = -1;
+      highlightString(-1);
       resetTunerUI();
     }
   }
 
   function updateTunerUI(freq) {
+    var mode = MODES.find(function (m) { return m.id === state.modeId; });
+    var isFree = (mode.id === 'free');
+
     if (!freq) {
       if (Date.now() - silenceTimer > 800) resetTunerUI();
       return;
     }
-    var midiFloat = 69 + 12 * Math.log2(freq / state.ref);
-    var midiRound = Math.round(midiFloat);
 
-    var mode = MODES.find(function (m) { return m.id === state.modeId; });
-    var targetMidi = null;
-    var targetIdx = -1;
-    if (mode && mode.strings) {
-      var minDiff = 1.0;
-      mode.strings.forEach(function (s, i) {
-        var diff = Math.abs(midiFloat - s.midi);
-        if (diff < minDiff) {
-          minDiff = diff;
-          targetMidi = s.midi;
-          targetIdx = i;
-        }
-      });
+    var midiFloat = 69 + 12 * Math.log2(freq / state.ref);
+
+    if (isFree) {
+      var midiRound = Math.round(midiFloat);
+      var cents = (midiFloat - midiRound) * 100;
+      if (cents > 50) cents = 50;
+      if (cents < -50) cents = -50;
+
+      var noteName = NOTE_NAMES[midiRound % 12];
+      var octave = Math.floor(midiRound / 12) - 1;
+      
+      el.noteName.classList.remove('is-prompt');
+      el.noteName.textContent = noteName;
+      el.noteOct.textContent = octave;
+      el.freqVal.textContent = freq.toFixed(2) + ' Hz';
+      el.needle.style.bottom = ((cents + 50) / 100 * 100) + '%';
+
+      var stateColor = 'ok';
+      var statusStr = '音准';
+      if (cents < -5) { stateColor = 'low'; statusStr = '偏低 · 需拧紧'; }
+      else if (cents > 5) { stateColor = 'high'; statusStr = '偏高 · 需拧松'; }
+      el.tuner.dataset.state = stateColor;
+      el.centsVal.textContent = (cents > 0 ? '+' : '') + cents.toFixed(1);
+      el.statusText.textContent = statusStr;
+      silenceTimer = Date.now();
+      return;
     }
-    var cents = 0;
-    var displayMidi = midiRound;
-    if (targetMidi !== null) {
-      cents = (midiFloat - targetMidi) * 100;
-      displayMidi = targetMidi;
-      highlightString(targetIdx);
-    } else {
-      cents = (midiFloat - midiRound) * 100;
-      highlightString(-1);
+
+    if (state.selectedStringIdx === -1) {
+      el.noteName.textContent = '请选择琴弦';
+      el.noteName.classList.add('is-prompt');
+      el.noteOct.textContent = '';
+      el.freqVal.textContent = freq.toFixed(2) + ' Hz'; 
+      el.centsVal.textContent = '--';
+      el.statusText.textContent = '';
+      el.needle.style.bottom = '50%';
+      el.tuner.dataset.state = 'idle';
+      return;
     }
+
+    var s = mode.strings[state.selectedStringIdx];
+    var targetMidi = s.midi;
+    var cents = (midiFloat - targetMidi) * 100;
+
     if (cents > 50) cents = 50;
     if (cents < -50) cents = -50;
 
-    var noteName = NOTE_NAMES[displayMidi % 12];
-    var octave = Math.floor(displayMidi / 12) - 1;
-    el.noteName.textContent = noteName;
-    el.noteOct.textContent = octave;
-    el.freqVal.textContent = freq.toFixed(2) + ' Hz';
+    var displayNoteName = NOTE_NAMES[targetMidi % 12];
+    var displayOct = Math.floor(targetMidi / 12) - 1;
 
-    var percent = (cents + 50) / 100 * 100;
-    el.needle.style.bottom = percent + '%';
+    el.noteName.classList.remove('is-prompt');
+    el.noteName.textContent = displayNoteName;
+    el.noteOct.textContent = displayOct;
+    el.freqVal.textContent = freq.toFixed(2) + ' Hz';
+    el.needle.style.bottom = ((cents + 50) / 100 * 100) + '%';
 
     var stateColor = 'ok';
     var statusStr = '音准';
     if (cents < -5) { stateColor = 'low'; statusStr = '偏低 · 需拧紧'; }
     else if (cents > 5) { stateColor = 'high'; statusStr = '偏高 · 需拧松'; }
+    
     el.tuner.dataset.state = stateColor;
     el.centsVal.textContent = (cents > 0 ? '+' : '') + cents.toFixed(1);
     el.statusText.textContent = statusStr;
