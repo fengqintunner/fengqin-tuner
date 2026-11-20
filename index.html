@@ -52,15 +52,14 @@ body::before{
 #wx-mask .arrow { font-size: 40px; margin-right: 10px; display: inline-block; animation: bounce 1s infinite alternate; }
 @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
 
-/* ========== 顶部品牌 ========== */
-.brand{
+/* ========== 顶部区域 ========== */
+.top-section {
+  max-width:600px;
+  margin:0 auto;
+  padding:calc(env(safe-area-inset-top) + 24px) 16px 16px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  padding:calc(env(safe-area-inset-top) + 24px) 16px 16px;
-  max-width:600px;
-  margin:0 auto;
 }
 .brand h1{
   margin:0;
@@ -68,6 +67,7 @@ body::before{
   font-weight:600;
   letter-spacing:.2em;
   text-indent:.2em;
+  text-align:center;
 }
 .brand .slogan{
   margin:8px 0 0;
@@ -75,13 +75,36 @@ body::before{
   letter-spacing:.25em;
   text-indent:.25em;
   color:var(--gold-d);
+  text-align:center;
 }
+
+/* 顶部横向排列的基准音选择 */
+.top-ref {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  width: 100%;
+  max-width: 420px;
+}
+.seg{
+  flex: 1;
+  appearance:none;font-family:inherit;cursor:pointer;
+  border:1px solid var(--line);background:var(--paper);border-radius:12px;
+  padding:10px 8px;color:var(--ink-2);font-size:14px;line-height:1.3;
+  transition:all .18s;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+}
+.seg span{display:block;font-size:12px;opacity:.78;margin-top:2px;}
+.seg.active{
+  border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
+  color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
+}
+.seg.active span{color:var(--gold-d);opacity:1;}
 
 /* ========== 主布局 ========== */
 .app{
   max-width:600px;
   margin:0 auto;
-  /* 恢复正常的底部间距，因为核心内容已经移到了上面 */
   padding:0 16px calc(env(safe-area-inset-bottom) + 28px);
   display:grid;
   grid-template-columns:48% minmax(0,1fr);
@@ -102,65 +125,49 @@ body::before{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
 
-/* ========== 置顶的定弦参考板块 ========== */
+/* ========== 定弦参考板块 ========== */
 #stringsWrap {
-  grid-column: 1 / -1; /* 占据整行 */
-  padding:16px;
-  margin-bottom: 2px; /* 与下方左右栏拉开一点视觉距离 */
+  grid-column: 1 / -1;
+  padding:14px 16px;
+  margin-bottom: 2px;
 }
-.strings-head{font-size:13px;letter-spacing:.1em;color:var(--ink-3);margin:0 0 12px 2px;text-align:center;}
 .strings{
   display:flex;
-  gap:8px;
+  gap:6px;
   width:100%;
 }
 .string-card{
   flex:1;
   text-align:center;border:1px solid var(--line);
-  background:var(--paper);border-radius:12px;padding:10px 2px 11px;
+  background:var(--paper);border-radius:10px;
+  padding:6px 2px 7px;
   transition:all .18s;
 }
-.string-card .label{font-size:12px;color:var(--ink-3);letter-spacing:.04em;}
-.string-card .note{font-size:22px;font-weight:600;line-height:1.15;margin-top:2px;}
-.string-card .note .oct{font-size:17px;color:var(--gold-d);}
+.string-card .label{font-size:11px;color:var(--ink-3);letter-spacing:.04em;}
+.string-card .note{font-size:18px;font-weight:600;line-height:1.15;margin-top:1px;}
+.string-card .note .oct{font-size:13px;color:var(--gold-d);}
 .string-card.active{
   border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
-  box-shadow:0 3px 12px rgba(184,147,90,.22);transform:translateY(-1px);
+  box-shadow:0 2px 8px rgba(184,147,90,.22);transform:translateY(-1px);
 }
 
 /* ========== 左侧菜单 ========== */
-.block{margin-bottom:16px;}
+.block{margin-bottom:12px;}
 .block:last-child{margin-bottom:0;}
-
-.segmented{display:flex;flex-direction:column;gap:10px;}
-.seg{
-  appearance:none;font-family:inherit;cursor:pointer;
-  border:1px solid var(--line);background:var(--paper);border-radius:14px;
-  padding:12px 14px;color:var(--ink-2);font-size:15px;line-height:1.3;
-  transition:all .18s;
-  display:flex;justify-content:space-between;align-items:center;text-align:left;
-}
-.seg span{display:block;font-size:12.5px;opacity:.78;margin-top:0;}
-.seg.active{
-  border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
-  color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
-}
-.seg.active span{color:var(--gold-d);opacity:1;}
 
 .modes{display:flex;flex-direction:column;gap:10px;}
 .mode-btn{
   appearance:none;font-family:inherit;cursor:pointer;
-  border:1px solid var(--line);background:var(--paper);border-radius:14px;
-  padding:12px 14px;font-size:15px;line-height:1.3;color:var(--ink-2);
+  border:1px solid var(--line);background:var(--paper);border-radius:12px;
+  padding:14px 10px;font-size:15px;line-height:1.3;color:var(--ink-2);
   transition:all .18s;
-  display:flex;justify-content:space-between;align-items:center;text-align:left;
+  display:flex;justify-content:center;align-items:center;text-align:center;
+  font-weight:600;
 }
-.mode-btn .sub{display:block;font-size:12.5px;opacity:.72;margin-top:0;}
 .mode-btn.active{
   border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
   color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
 }
-.mode-btn.active .sub{color:var(--gold-d);opacity:1;}
 
 /* ========== 右侧：垂直调音器 ========== */
 .tuner{
@@ -191,7 +198,6 @@ body::before{
   width:100%;max-width:200px;
 }
 .stop-btn:active{transform:scale(.97);}
-.hint{margin:0 auto;max-width:260px;font-size:11.5px;line-height:1.6;color:var(--ink-3);letter-spacing:.02em;}
 
 .tuner-body {
   width: 100%;
@@ -257,21 +263,20 @@ body::before{
 
 /* ========== 极小屏幕微调 ========== */
 @media (max-width:360px){
-  .brand { padding: calc(env(safe-area-inset-top) + 16px) 12px 10px; }
+  .top-section { padding: calc(env(safe-area-inset-top) + 16px) 12px 12px; }
   .brand h1 { font-size: 22px; }
   .brand .slogan { font-size: 11.5px; }
   .app{grid-template-columns:46% minmax(0,1fr);gap:10px;padding:0 10px calc(env(safe-area-inset-bottom) + 16px);}
   .panel{padding:14px 10px;border-radius:16px;}
   #stringsWrap{padding:12px 10px; margin-bottom:0;}
-  .seg, .mode-btn{padding:10px 8px;font-size:13.5px;}
-  .seg span, .mode-btn .sub{font-size:11px;}
+  .mode-btn{padding:12px 8px;font-size:14px;}
   .note-name{font-size:50px;}
   .note-oct{font-size:36px;}
   .meter-scale{width:36px;height:180px;}
   .meter-legend{height:180px;}
   .start-btn, .stop-btn{padding:12px 10px;font-size:14px;max-width:160px;}
-  .hint{font-size:10.5px;}
-  .string-card .note {font-size: 18px;}
+  .string-card .note {font-size: 16px;}
+  .string-card .note .oct {font-size: 12px;}
 }
 </style>
 </head>
@@ -282,35 +287,35 @@ body::before{
   <div>请点击右上角 <strong>···</strong><br>选择 <strong>“在 Safari 浏览器中打开”</strong><br>才能正常使用麦克风调音</div>
 </div>
 
-<!-- 顶部品牌 -->
-<header class="brand">
-  <h1>凤琴调音器</h1>
-  <p class="slogan">中式弹拨乐界清流</p>
+<!-- 顶部区域 -->
+<header class="top-section">
+  <div class="brand">
+    <h1>凤琴调音器</h1>
+    <p class="slogan">中式弹拨乐界清流</p>
+  </div>
+  
+  <!-- 基准音选项移至顶部 -->
+  <div class="top-ref" id="refGroup">
+    <button class="seg active" data-ref="440">
+      <span style="font-weight:600;">A4 = 440Hz</span>
+      <span>国际标准</span>
+    </button>
+    <button class="seg" data-ref="432">
+      <span style="font-weight:600;">A4 = 432Hz</span>
+      <span>伶伦凤鸣定律猜想</span>
+    </button>
+  </div>
 </header>
 
 <div class="app">
 
   <!-- 置顶：定弦参考 -->
   <div class="panel" id="stringsWrap" hidden>
-    <div class="strings-head">定弦参考 · 粗弦 → 细弦</div>
     <div class="strings" id="stringsPanel"></div>
   </div>
 
   <!-- 左侧菜单 -->
   <div class="panel panel-left">
-    <section class="block">
-      <div class="segmented" id="refGroup">
-        <button class="seg active" data-ref="440">
-          <span style="font-weight:600;">A4 = 440Hz</span>
-          <span>国际标准</span>
-        </button>
-        <button class="seg" data-ref="432">
-          <span style="font-weight:600;">A4 = 432Hz</span>
-          <span>伶伦凤鸣定律猜想</span>
-        </button>
-      </div>
-    </section>
-
     <section class="block">
       <div class="modes" id="modeGroup"></div>
     </section>
@@ -320,12 +325,11 @@ body::before{
   <div class="panel panel-right">
     <section class="tuner" id="tuner" data-state="idle">
       <div id="gate">
-        <button class="start-btn" id="startBtn">开启麦克风</button>
-        <p class="hint">需要麦克风授权 · 声音仅在本机处理，不会上传</p>
+        <button class="start-btn" id="startBtn">开启调音</button>
       </div>
 
       <div id="stopWrap" hidden>
-        <button class="stop-btn" id="stopBtn">关闭麦克风</button>
+        <button class="stop-btn" id="stopBtn">关闭调音</button>
       </div>
 
       <div class="tuner-body">
@@ -370,14 +374,14 @@ body::before{
 
   var NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   var MODES = [
-    { id:'free', label:'自由调音', sub:'任意乐器', strings:null },
-    { id:'ruan', label:'跨界中阮', sub:'4弦→1弦', strings:[
+    { id:'free', label:'自由调音', strings:null },
+    { id:'ruan', label:'跨界中阮', strings:[
       { label:'4弦', name:'G', oct:2, midi:43 },
       { label:'3弦', name:'D', oct:3, midi:50 },
       { label:'2弦', name:'G', oct:3, midi:55 },
       { label:'1弦', name:'D', oct:4, midi:62 }
     ]},
-    { id:'guitar', label:'国风吉他', sub:'6弦→1弦', strings:[
+    { id:'guitar', label:'国风吉他', strings:[
       { label:'6弦', name:'E', oct:2, midi:40 },
       { label:'5弦', name:'A', oct:2, midi:45 },
       { label:'4弦', name:'D', oct:3, midi:50 },
@@ -385,13 +389,13 @@ body::before{
       { label:'2弦', name:'B', oct:3, midi:59 },
       { label:'1弦', name:'E', oct:4, midi:64 }
     ]},
-    { id:'ukeH', label:'小批把', sub:'High G', strings:[
+    { id:'ukeH', label:'小批把 (High G)', strings:[
       { label:'4弦', name:'G', oct:4, midi:67 },
       { label:'3弦', name:'C', oct:4, midi:60 },
       { label:'2弦', name:'E', oct:4, midi:64 },
       { label:'1弦', name:'A', oct:4, midi:69 }
     ]},
-    { id:'ukeL', label:'小批把', sub:'Low G', strings:[
+    { id:'ukeL', label:'小批把 (Low G)', strings:[
       { label:'4弦', name:'G', oct:3, midi:55 },
       { label:'3弦', name:'C', oct:4, midi:60 },
       { label:'2弦', name:'E', oct:4, midi:64 },
@@ -439,7 +443,7 @@ body::before{
     MODES.forEach(function (m) {
       var btn = document.createElement('button');
       btn.className = 'mode-btn' + (m.id === state.modeId ? ' active' : '');
-      btn.innerHTML = '<span style="font-weight:600;">' + m.label + '</span><span class="sub">' + m.sub + '</span>';
+      btn.textContent = m.label;
       btn.onclick = function () {
         state.modeId = m.id;
         renderModes();
@@ -503,7 +507,7 @@ body::before{
       el.stopWrap.hidden = true;
       el.gate.hidden = false;
       el.startBtn.disabled = false;
-      el.startBtn.textContent = '开启麦克风';
+      el.startBtn.textContent = '开启调音';
       resetTunerUI();
     }
   }
@@ -662,7 +666,7 @@ body::before{
       console.error('麦克风启动失败:', err);
       if (isUserGesture) {
         el.startBtn.disabled = false;
-        el.startBtn.textContent = '开启麦克风';
+        el.startBtn.textContent = '开启调音';
         alert('无法访问麦克风。请确保已授予麦克风权限。');
       } else {
         el.gate.hidden = false;
