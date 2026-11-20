@@ -81,8 +81,8 @@ body::before{
 .app{
   max-width:600px;
   margin:0 auto;
-  /* 增加了底部留白 100px，用于避开 Netlify 徽标遮挡 */
-  padding:0 16px calc(env(safe-area-inset-bottom) + 100px);
+  /* 恢复正常的底部间距，因为核心内容已经移到了上面 */
+  padding:0 16px calc(env(safe-area-inset-bottom) + 28px);
   display:grid;
   grid-template-columns:48% minmax(0,1fr);
   gap:14px;
@@ -100,6 +100,32 @@ body::before{
 }
 .panel-right{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+/* ========== 置顶的定弦参考板块 ========== */
+#stringsWrap {
+  grid-column: 1 / -1; /* 占据整行 */
+  padding:16px;
+  margin-bottom: 2px; /* 与下方左右栏拉开一点视觉距离 */
+}
+.strings-head{font-size:13px;letter-spacing:.1em;color:var(--ink-3);margin:0 0 12px 2px;text-align:center;}
+.strings{
+  display:flex;
+  gap:8px;
+  width:100%;
+}
+.string-card{
+  flex:1;
+  text-align:center;border:1px solid var(--line);
+  background:var(--paper);border-radius:12px;padding:10px 2px 11px;
+  transition:all .18s;
+}
+.string-card .label{font-size:12px;color:var(--ink-3);letter-spacing:.04em;}
+.string-card .note{font-size:22px;font-weight:600;line-height:1.15;margin-top:2px;}
+.string-card .note .oct{font-size:17px;color:var(--gold-d);}
+.string-card.active{
+  border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
+  box-shadow:0 3px 12px rgba(184,147,90,.22);transform:translateY(-1px);
 }
 
 /* ========== 左侧菜单 ========== */
@@ -135,32 +161,6 @@ body::before{
   color:var(--ink);box-shadow:0 2px 12px rgba(184,147,90,.16);
 }
 .mode-btn.active .sub{color:var(--gold-d);opacity:1;}
-
-/* ========== 底部定弦参考 ========== */
-#stringsWrap {
-  grid-column: 1 / -1;
-  padding:16px;
-  margin-bottom:0;
-}
-.strings-head{font-size:13px;letter-spacing:.1em;color:var(--ink-3);margin:0 0 12px 2px;text-align:center;}
-.strings{
-  display:flex;
-  gap:8px;
-  width:100%;
-}
-.string-card{
-  flex:1;
-  text-align:center;border:1px solid var(--line);
-  background:var(--paper);border-radius:12px;padding:10px 2px 11px;
-  transition:all .18s;
-}
-.string-card .label{font-size:12px;color:var(--ink-3);letter-spacing:.04em;}
-.string-card .note{font-size:22px;font-weight:600;line-height:1.15;margin-top:2px;}
-.string-card .note .oct{font-size:17px;color:var(--gold-d);}
-.string-card.active{
-  border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
-  box-shadow:0 3px 12px rgba(184,147,90,.22);transform:translateY(-1px);
-}
 
 /* ========== 右侧：垂直调音器 ========== */
 .tuner{
@@ -260,10 +260,9 @@ body::before{
   .brand { padding: calc(env(safe-area-inset-top) + 16px) 12px 10px; }
   .brand h1 { font-size: 22px; }
   .brand .slogan { font-size: 11.5px; }
-  /* 同样增加手机端的底部留白 */
-  .app{grid-template-columns:46% minmax(0,1fr);gap:10px;padding:0 10px calc(env(safe-area-inset-bottom) + 100px);}
+  .app{grid-template-columns:46% minmax(0,1fr);gap:10px;padding:0 10px calc(env(safe-area-inset-bottom) + 16px);}
   .panel{padding:14px 10px;border-radius:16px;}
-  #stringsWrap{padding:12px 10px;}
+  #stringsWrap{padding:12px 10px; margin-bottom:0;}
   .seg, .mode-btn{padding:10px 8px;font-size:13.5px;}
   .seg span, .mode-btn .sub{font-size:11px;}
   .note-name{font-size:50px;}
@@ -290,6 +289,12 @@ body::before{
 </header>
 
 <div class="app">
+
+  <!-- 置顶：定弦参考 -->
+  <div class="panel" id="stringsWrap" hidden>
+    <div class="strings-head">定弦参考 · 粗弦 → 细弦</div>
+    <div class="strings" id="stringsPanel"></div>
+  </div>
 
   <!-- 左侧菜单 -->
   <div class="panel panel-left">
@@ -348,12 +353,6 @@ body::before{
         </div>
       </div>
     </section>
-  </div>
-
-  <!-- 底部定弦参考 -->
-  <div class="panel" id="stringsWrap" hidden>
-    <div class="strings-head">定弦参考 · 粗弦 → 细弦</div>
-    <div class="strings" id="stringsPanel"></div>
   </div>
 
   <footer class="foot">凤琴 · 千年文脉皆可弦歌</footer>
