@@ -143,7 +143,6 @@ body::before{
   background:var(--paper);border-radius:10px;
   padding:8px 2px 9px;
   transition:all .18s;
-  cursor:pointer;
 }
 /* 放大琴弦标签和音名 */
 .string-card .label{font-size:13px;color:var(--ink-3);letter-spacing:.04em;}
@@ -220,7 +219,6 @@ body::before{
   align-items: center;
 }
 
-/* 去除margin-top，使整体与右侧平齐 */
 .note-display{
   display:flex;
   align-items:center;
@@ -232,26 +230,6 @@ body::before{
 }
 .note-name{font-size:56px;line-height:1;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
 .note-oct{font-size:40px;line-height:1;font-weight:600;color:var(--gold-d);font-variant-numeric:tabular-nums;}
-
-/* 修复：去掉外框背景与阴影，保留字号颜色，用透明边框占位保持高度对齐 */
-.note-name.is-prompt {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 14px 10px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--gold-d);
-  letter-spacing: 0.1em;
-  border: 1px solid transparent; /* 透明边框，用于完美占位维持高度 */
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
-  box-sizing: border-box;
-  margin: 0;
-}
 
 .freq{font-size:13.5px;color:var(--ink-2);letter-spacing:.06em;font-variant-numeric:tabular-nums;margin-top:6px;min-height:20px;}
 
@@ -335,12 +313,6 @@ body::before{
   
   .note-name{font-size:46px;}
   .note-oct{font-size:34px;}
-  
-  /* 极小屏幕同步适配提示框尺寸 */
-  .note-name.is-prompt {
-    padding: 12px 8px;
-    font-size: 14px;
-  }
   
   .meter { height: 140px; }
   .meter-scale{width:36px;height:140px;}
@@ -498,7 +470,6 @@ body::before{
     ref: 440,
     modeId: 'free',
     listening: false,
-    selectedStringIdx: -1,
     wasListeningBeforeHide: false
   };
 
@@ -518,7 +489,6 @@ body::before{
       btn.textContent = m.label;
       btn.onclick = function () {
         state.modeId = m.id;
-        state.selectedStringIdx = -1;
         renderModes();
         updateStringsUI();
         resetTunerUI();
@@ -543,24 +513,12 @@ body::before{
       card.innerHTML =
         '<div class="label">' + s.label + '</div>' +
         '<div class="note">' + s.name + '<span class="oct">' + s.oct + '</span></div>';
-      
-      card.onclick = function () {
-        if (state.selectedStringIdx === i) {
-          state.selectedStringIdx = -1;
-        } else {
-          state.selectedStringIdx = i;
-        }
-        highlightString(state.selectedStringIdx);
-        resetTunerUI();
-      };
-      
       el.stringsPanel.appendChild(card);
     });
-    highlightString(state.selectedStringIdx);
+    highlightString(-1);
   }
 
   function highlightString(idx) {
-    state.selectedStringIdx = idx;
     var cards = el.stringsPanel.children;
     for (var i = 0; i < cards.length; i++) {
       if (i === idx) cards[i].classList.add('active');
@@ -569,22 +527,14 @@ body::before{
   }
 
   function resetTunerUI() {
-    if (state.modeId !== 'free' && state.selectedStringIdx === -1) {
-      el.noteName.textContent = '请选择琴弦';
-      el.noteName.classList.add('is-prompt');
-      el.noteOct.textContent = '';
-      el.statusText.textContent = '';
-    } else {
-      el.noteName.textContent = '';
-      el.noteName.classList.remove('is-prompt');
-      el.noteOct.textContent = '';
-      el.statusText.textContent = '等待拾音…';
-    }
-    
+    el.noteName.textContent = '';
+    el.noteOct.textContent = '';
+    el.statusText.textContent = '等待拾音…';
     el.freqVal.textContent = '-- Hz';
     el.centsVal.textContent = '--';
     el.needle.style.bottom = '50%';
     el.tuner.dataset.state = 'idle';
+    highlightString(-1);
   }
 
   function stopAudio(keepUI) {
@@ -599,82 +549,61 @@ body::before{
       el.gate.hidden = false;
       el.startBtn.disabled = false;
       el.startBtn.textContent = '开启调音';
-      state.selectedStringIdx = -1;
-      highlightString(-1);
       resetTunerUI();
     }
   }
 
   function updateTunerUI(freq) {
-    var mode = MODES.find(function (m) { return m.id === state.modeId; });
-    var isFree = (mode.id === 'free');
-
     if (!freq) {
       if (Date.now() - silenceTimer > 800) resetTunerUI();
       return;
     }
-
     var midiFloat = 69 + 12 * Math.log2(freq / state.ref);
+    var midiRound = Math.round(midiFloat);
 
-    if (isFree) {
-      var midiRound = Math.round(midiFloat);
-      var cents = (midiFloat - midiRound) * 100;
-      if (cents > 50) cents = 50;
-      if (cents < -50) cents = -50;
-
-      var noteName = NOTE_NAMES[midiRound % 12];
-      var octave = Math.floor(midiRound / 12) - 1;
-      
-      el.noteName.classList.remove('is-prompt');
-      el.noteName.textContent = noteName;
-      el.noteOct.textContent = octave;
-      el.freqVal.textContent = freq.toFixed(2) + ' Hz';
-      el.needle.style.bottom = ((cents + 50) / 100 * 100) + '%';
-
-      var stateColor = 'ok';
-      var statusStr = '音准';
-      if (cents < -5) { stateColor = 'low'; statusStr = '偏低 · 需拧紧'; }
-      else if (cents > 5) { stateColor = 'high'; statusStr = '偏高 · 需拧松'; }
-      el.tuner.dataset.state = stateColor;
-      el.centsVal.textContent = (cents > 0 ? '+' : '') + cents.toFixed(1);
-      el.statusText.textContent = statusStr;
-      silenceTimer = Date.now();
-      return;
+    // 自动识别琴弦逻辑
+    var mode = MODES.find(function (m) { return m.id === state.modeId; });
+    var targetMidi = null;
+    var targetIdx = -1;
+    if (mode && mode.strings) {
+      var minDiff = 1.0; // 半音差在1以内认为匹配当前琴弦
+      mode.strings.forEach(function (s, i) {
+        var diff = Math.abs(midiFloat - s.midi);
+        if (diff < minDiff) {
+          minDiff = diff;
+          targetMidi = s.midi;
+          targetIdx = i;
+        }
+      });
     }
-
-    if (state.selectedStringIdx === -1) {
-      el.noteName.textContent = '请选择琴弦';
-      el.noteName.classList.add('is-prompt');
-      el.noteOct.textContent = '';
-      el.freqVal.textContent = freq.toFixed(2) + ' Hz'; 
-      el.centsVal.textContent = '--';
-      el.statusText.textContent = '';
-      el.needle.style.bottom = '50%';
-      el.tuner.dataset.state = 'idle';
-      return;
+    var cents = 0;
+    var displayMidi = midiRound;
+    
+    if (targetMidi !== null) {
+      cents = (midiFloat - targetMidi) * 100;
+      displayMidi = targetMidi;
+      highlightString(targetIdx);
+    } else {
+      cents = (midiFloat - midiRound) * 100;
+      highlightString(-1);
     }
-
-    var s = mode.strings[state.selectedStringIdx];
-    var targetMidi = s.midi;
-    var cents = (midiFloat - targetMidi) * 100;
-
+    
     if (cents > 50) cents = 50;
     if (cents < -50) cents = -50;
 
-    var displayNoteName = NOTE_NAMES[targetMidi % 12];
-    var displayOct = Math.floor(targetMidi / 12) - 1;
-
-    el.noteName.classList.remove('is-prompt');
-    el.noteName.textContent = displayNoteName;
-    el.noteOct.textContent = displayOct;
+    var noteName = NOTE_NAMES[displayMidi % 12];
+    var octave = Math.floor(displayMidi / 12) - 1;
+    el.noteName.textContent = noteName;
+    el.noteOct.textContent = octave;
     el.freqVal.textContent = freq.toFixed(2) + ' Hz';
-    el.needle.style.bottom = ((cents + 50) / 100 * 100) + '%';
+
+    var percent = (cents + 50) / 100 * 100;
+    el.needle.style.bottom = percent + '%';
 
     var stateColor = 'ok';
     var statusStr = '音准';
     if (cents < -5) { stateColor = 'low'; statusStr = '偏低 · 需拧紧'; }
     else if (cents > 5) { stateColor = 'high'; statusStr = '偏高 · 需拧松'; }
-    
     el.tuner.dataset.state = stateColor;
     el.centsVal.textContent = (cents > 0 ? '+' : '') + cents.toFixed(1);
     el.statusText.textContent = statusStr;
