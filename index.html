@@ -107,10 +107,9 @@ body::before{
   margin:0 auto;
   padding:0 16px calc(env(safe-area-inset-bottom) + 28px);
   display:grid;
-  /* 左侧调音器稍宽，右侧菜单稍窄 */
   grid-template-columns: minmax(0, 1fr) 48%;
   gap:14px;
-  align-items: stretch; /* 恢复等高拉伸 */
+  align-items: stretch;
 }
 .panel{
   border:1px solid var(--line);
@@ -124,7 +123,7 @@ body::before{
 }
 .panel-right{
   display:flex;flex-direction:column;align-items:center;
-  justify-content: flex-start; /* 顶部对齐 */
+  justify-content: flex-start;
 }
 
 /* ========== 定弦参考板块 ========== */
@@ -142,13 +141,15 @@ body::before{
   flex:1;
   text-align:center;border:1px solid var(--line);
   background:var(--paper);border-radius:10px;
-  padding:6px 2px 7px;
+  padding:8px 2px 9px; /* 略微增加上下内边距以容纳更大字体 */
   transition:all .18s;
   cursor:pointer;
 }
-.string-card .label{font-size:11px;color:var(--ink-3);letter-spacing:.04em;}
-.string-card .note{font-size:18px;font-weight:600;line-height:1.15;margin-top:1px;}
-.string-card .note .oct{font-size:13px;color:var(--gold-d);}
+/* 放大琴弦标签和音名 */
+.string-card .label{font-size:13px;color:var(--ink-3);letter-spacing:.04em;}
+.string-card .note{font-size:21px;font-weight:600;line-height:1.15;margin-top:2px;}
+.string-card .note .oct{font-size:15px;color:var(--gold-d);}
+
 .string-card.active{
   border-color:var(--gold);background:linear-gradient(180deg,#FFFBF1,#F7EDDA);
   box-shadow:0 2px 8px rgba(184,147,90,.22);transform:translateY(-1px);
@@ -223,17 +224,18 @@ body::before{
 .note-name{font-size:56px;line-height:1;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
 .note-oct{font-size:40px;line-height:1;font-weight:600;color:var(--gold-d);font-variant-numeric:tabular-nums;}
 
+/* 未选弦提示颜色改为和开启调音一致的金色 */
 .note-name.is-prompt {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: normal;
-  color: var(--ink-2);
+  color: var(--gold-d);
   letter-spacing: 0.1em;
   align-self: center;
 }
 
 .freq{font-size:13.5px;color:var(--ink-2);letter-spacing:.06em;font-variant-numeric:tabular-nums;margin-top:2px;min-height:20px;}
 
-/* 进度条及整体高度 */
+/* 进度条 */
 .meter{
   margin-top:10px;
   position: relative;
@@ -270,7 +272,7 @@ body::before{
 .tuner[data-state="ok"] .meter-needle{animation:pulse 1.3s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
 
-/* 刻度悬浮左侧 */
+/* 刻度 */
 .meter-legend{
   position: absolute;
   right: calc(50% + 28px);
@@ -313,14 +315,16 @@ body::before{
   
   .note-name{font-size:46px;}
   .note-oct{font-size:34px;}
-  .note-name.is-prompt { font-size: 18px; }
+  .note-name.is-prompt { font-size: 20px; }
   
   .meter { height: 140px; }
   .meter-scale{width:36px;height:140px;}
   .meter-legend{ right: calc(50% + 24px); }
   
-  .string-card .note {font-size: 16px;}
-  .string-card .note .oct {font-size: 12px;}
+  /* 小屏幕下稍微克制一点，但也比原来大 */
+  .string-card .label { font-size: 12px; }
+  .string-card .note { font-size: 19px; }
+  .string-card .note .oct { font-size: 13px; }
 }
 </style>
 </head>
