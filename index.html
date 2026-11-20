@@ -148,7 +148,6 @@ body::before{
 .tuner[data-state="ok"]{--sc:var(--ok);}
 .tuner[data-state="high"]{--sc:var(--high);}
 
-/* 按钮显隐控制 */
 #gate, #stopWrap { width:100%; text-align:center; }
 #gate[hidden], #stopWrap[hidden] { display:none !important; }
 
@@ -168,7 +167,6 @@ body::before{
 .stop-btn:active{transform:scale(.97);}
 .hint{margin:0 auto;max-width:340px;font-size:13.5px;line-height:1.75;color:var(--ink-3);letter-spacing:.03em;}
 
-/* 调音主体内容（默认常显） */
 .tuner-body {
   width: 100%;
   display: flex;
@@ -224,35 +222,91 @@ body::before{
 .cents{font-size:28px;font-weight:600;color:var(--sc);font-variant-numeric:tabular-nums;transition:color .2s;}
 .status{font-size:19px;letter-spacing:.06em;color:var(--ink-2);}
 
-/* ========== 页脚 ========== */
 .foot{
   grid-column:1 / -1;
   margin-top:4px;text-align:center;font-size:12px;
   letter-spacing:.22em;text-indent:.22em;color:var(--ink-3);
 }
 
-/* ========== 响应式 ========== */
+/* ========== 响应式（修复手机端左右并排） ========== */
 @media (max-width:900px){
   .app{
-    grid-template-columns:1fr;
-    gap:14px;
-    padding:calc(env(safe-area-inset-top) + 12px) 14px calc(env(safe-area-inset-bottom) + 24px);
+    /* 保持左右分栏，左侧 45%，右侧自适应，杜绝上下堆叠 */
+    grid-template-columns: 45% minmax(0, 1fr);
+    gap: 10px;
+    padding: calc(env(safe-area-inset-top) + 10px) 10px calc(env(safe-area-inset-bottom) + 16px);
+    max-width: 100%;
   }
-  .panel{padding:18px 16px;border-radius:18px;}
-  .brand{padding:2px 0 16px;}
-  .brand h1{font-size:24px;}
-  .slogan{font-size:12.5px;}
-  .meter-scale, .meter-legend { height:200px; }
+  .panel{
+    padding: 14px 10px;
+    border-radius: 16px;
+  }
+  
+  /* 左侧排版优化 */
+  .brand { padding-bottom: 12px; }
+  .brand h1 { font-size: 19px; letter-spacing: 0.1em; }
+  .slogan { font-size: 10px; letter-spacing: 0.05em; }
+  .logo { width: 44px; height: 44px; font-size: 22px; margin-bottom: 8px; }
+  
+  .seg, .mode-btn {
+    padding: 10px 8px;
+    font-size: 14px;
+    flex-direction: column; /* 窄屏下让文字上下排列，避免横向挤压 */
+    align-items: flex-start;
+    gap: 3px;
+  }
+  .seg span, .mode-btn .sub {
+    font-size: 11.5px;
+  }
+  
+  .strings-head { font-size: 11px; margin-bottom: 6px; }
+  .strings { gap: 6px; }
+  .string-card {
+    flex: 1 1 calc(50% - 6px); /* 窄屏下改为一行两个定弦卡片 */
+    padding: 6px 2px;
+    border-radius: 8px;
+  }
+  .string-card .label { font-size: 10px; }
+  .string-card .note { font-size: 16px; margin-top: 0; }
+  .string-card .note .oct { font-size: 12px; }
+  
+  /* 右侧调音器缩小适配 */
+  .note-name { font-size: 52px; }
+  .note-oct { font-size: 36px; }
+  .freq { font-size: 13px; margin-top: 2px; min-height: 18px; }
+  
+  .meter { gap: 8px; margin-top: 16px; }
+  .meter-scale { width: 36px; height: 180px; border-radius: 18px; }
+  .meter-legend { height: 180px; font-size: 11px; padding: 2px 0; }
+  
+  .start-btn, .stop-btn { 
+    padding: 12px 18px; 
+    font-size: 15px; 
+    margin: 14px 0; 
+    letter-spacing: 0.05em;
+    width: 100%;
+    max-width: 180px;
+  }
+  .hint { font-size: 11px; line-height: 1.6; padding: 0 4px; }
+  .readout { margin-top: 16px; gap: 8px; }
+  .cents { font-size: 22px; }
+  .status { font-size: 15px; }
+  
+  .foot { font-size: 10px; letter-spacing: 0.1em; margin-top: 10px; }
 }
+
 @media (max-width:360px){
-  .note-name{font-size:62px;}
-  .note-oct{font-size:46px;}
-  .mode-btn{font-size:15px;}
-  .mode-btn .sub{font-size:12px;}
-  .seg{font-size:15px;}
-  .seg span{font-size:12px;}
-  .cents{font-size:24px;}
-  .status{font-size:17px;}
+  .app { grid-template-columns: 46% minmax(0, 1fr); gap: 8px; padding: 8px; }
+  .seg, .mode-btn { padding: 8px 6px; font-size: 13px; }
+  .seg span, .mode-btn .sub { font-size: 11px; }
+  .note-name { font-size: 46px; }
+  .note-oct { font-size: 32px; }
+  .meter-scale { width: 32px; height: 160px; }
+  .meter-legend { height: 160px; }
+  .start-btn, .stop-btn { padding: 10px 12px; font-size: 14px; }
+  .hint { font-size: 10px; }
+  .cents { font-size: 20px; }
+  .status { font-size: 13px; }
 }
 </style>
 </head>
@@ -633,7 +687,6 @@ body::before{
       state.listening = true;
       state.wasListeningBeforeHide = true;
       
-      // 切换按钮状态
       el.gate.hidden = true;
       el.stopWrap.hidden = false;
       resetTunerUI();
